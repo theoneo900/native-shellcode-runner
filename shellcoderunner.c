@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
-// 1. (Optional) You can DECLARE the pointer globally...
+// (Optional) declare the pointer globally
 void* my_payload_mem; 
 void* my_payload_dest;
 
 int main() {
-    // 2. ...but you must CALL the function here, when the program is running.
+    // call the function here, when the program is running.
     my_payload_mem = mmap(NULL, 4096, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
     // Check for success
@@ -19,11 +19,22 @@ int main() {
 
     printf("Memory allocated at: %p\n", my_payload_mem);
 
+    // canned shellcode maybe write my own
     unsigned char shellcode[] = "\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05";
 
+    // copy the shellcode to the allocated memory
     my_payload_dest = memcpy(my_payload_mem, shellcode, sizeof(shellcode));
 
     printf("Shellcode copied succesfully to the allocated memory with memory destination at: %p\n", my_payload_dest);
+
+    // create a funciton pointer
+    void (*func_ptr)();
+
+    // cast the void pointer to the function pointer
+    *(void**)(&func_ptr) = my_payload_dest;
+
+    // call the function pointer
+    func_ptr();
     
     return 0;
 }
